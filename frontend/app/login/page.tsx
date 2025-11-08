@@ -5,8 +5,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { loginUser } from "@/lib/authService"; // ✅ Import from your axios helper
 
-// ✅ Type for form fields
+// ✅ Form type definition
 type LoginFormData = {
   email: string;
   password: string;
@@ -22,7 +23,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
 
-  // ✅ React Hook Form setup
   const {
     register,
     handleSubmit,
@@ -31,37 +31,16 @@ export default function LoginPage() {
     resolver: yupResolver(schema),
   });
 
-  // ✅ Handles login form submit
+  // ✅ Handle form submit
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setServerError("");
 
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      // Safe JSON parse
-      let result: { success?: boolean; message?: string } = {};
-      try {
-        result = await res.json();
-      } catch {
-        setServerError("Unexpected server response.");
-        return;
-      }
-
-      if (!res.ok) {
-        // ❌ Invalid credentials — show error, don’t redirect
-        setServerError(result.message || "Invalid email or password");
-        return;
-      }
-
-      // ✅ Valid login — redirect to dashboard
+      await loginUser(data.email, data.password);
       router.push("/dashboard");
-    } catch (err) {
-      console.error("Login error:", err);
-      setServerError("Something went wrong. Try again.");
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || "Invalid email or password";
+      setServerError(errorMsg);
     }
   };
 
