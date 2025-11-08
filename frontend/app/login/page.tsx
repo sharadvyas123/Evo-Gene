@@ -34,10 +34,11 @@ export default function LoginPage() {
   // ✅ Handle form submit
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     setServerError("");
+    console.log("the button was clicked")
 
     try {
       await loginUser(data.email, data.password);
-      router.push("/dashboard");
+      router.push("/");
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || "Invalid email or password";
       setServerError(errorMsg);

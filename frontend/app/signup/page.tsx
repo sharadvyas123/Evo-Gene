@@ -1,96 +1,106 @@
-"use client";
+"use client"
 
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signupUser } from "@/lib/authService";
+import { useRouter } from "next/navigation";
 
-// ✅ Type definition
-type SignupFormData = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-// ✅ Validation schema
-const schema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup.string().min(6, "Min 6 chars").required("Password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "Passwords must match")
-    .required("Confirm your password"),
-});
-
-export default function SignupPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const [serverError, setServerError] = useState("");
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupFormData>({
-    resolver: yupResolver(schema),
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirm_password: "",
   });
 
-  // ✅ Handle signup
-  const onSubmit = async (data: SignupFormData) => {
-    setServerError("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
     try {
-      await signupUser(data.email, data.password);
-      router.push("/dashboard");
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.message || "Signup failed";
-      setServerError(errorMsg);
+      const res = await fetch("http://127.0.0.1:8000/api/signup/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess("Registration successful! Redirecting to login...");
+        setTimeout(() => router.push("/login"), 1500); // ✅ redirect to login after success
+      } else {
+        setError(data.detail || data.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Signup failed:", err);
+      setError("Unable to connect to server");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-[#050B1E] text-white">
-      <div className="w-full max-w-md bg-[#0B1228] rounded-xl p-8 shadow-lg">
-        <h1 className="text-3xl font-bold text-center mb-6">Create Account</h1>
+    <div className="min-h-screen flex justify-center items-center bg-[#050B1E] text-white">
+      <div className="bg-[#0B1228] p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6">Create Your Account</h1>
 
-        {serverError && <p className="text-red-400 text-center mb-4">{serverError}</p>}
+        {error && <p className="text-red-400 text-center mb-3">{error}</p>}
+        {success && <p className="text-green-400 text-center mb-3">{success}</p>}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              {...register("email")}
-              className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-            <p className="text-red-400 text-sm mt-1">{errors.email?.message}</p>
-          </div>
-
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              {...register("password")}
-              className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-            <p className="text-red-400 text-sm mt-1">{errors.password?.message}</p>
-          </div>
-
-          <div>
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              {...register("confirmPassword")}
-              className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-            <p className="text-red-400 text-sm mt-1">{errors.confirmPassword?.message}</p>
-          </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
+          <input
+            type="password"
+            name="confirm_password"
+            placeholder="Confirm Password"
+            value={formData.confirm_password}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded bg-[#101832] focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          />
 
           <button
             type="submit"
-            className="mt-4 p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded font-semibold hover:scale-105 transition-transform"
+            disabled={loading}
+            className="p-3 mt-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded font-semibold hover:scale-105 transition-transform"
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Register"}
           </button>
         </form>
 

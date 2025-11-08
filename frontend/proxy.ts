@@ -24,5 +24,5 @@ export function proxy(req: NextRequest) {
 
 // ✅ Define which routes should be handled by proxy
 export const config = {
-  matcher: [ "/login", "/signup"], //"/", "/dashboard" this to add 
+  matcher: ["/chatbot", "/login", "/signup"], //"/", "/dashboard" this to add 
 };
