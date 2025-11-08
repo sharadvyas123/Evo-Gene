@@ -1,58 +1,45 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
 
-def register_view(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+@api_view(['POST'])
+def register_user(request):
+    data = request.data
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    confirm_password = data.get('confirm_password')
 
-        
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match!")
-            return redirect('register')
+    if password != confirm_password:
+        return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
 
-        
-        if User.objects.filter(username=email).exists():
-            messages.error(request, "Email already registered!")
-            return redirect('register')
+    if User.objects.filter(username=email).exists():
+        return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
-        
-        user = User.objects.create_user(
-            username=email,  
-            email=email,
-            password=password,
-            first_name=name
-        )
-        user.save()
-        messages.success(request, "Registration successful! You can now log in.")
-        return redirect('login')
+    user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
+    user.save()
 
-    return render(request, 'register.html')
+    return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
 
 
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+@api_view(['POST'])
+def login_user(request):
+    data = request.data
+    email = data.get('email')
+    password = data.get('password')
 
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, f"Welcome, {user.first_name}!")
-            return redirect('home')  
-        else:
-            messages.error(request, "Invalid credentials!")
-            return redirect('login')
-
-    return render(request, 'login.html')
+    user = authenticate(username=email, password=password)
+    if user is not None:
+        login(request, user)
+        return Response({'message': 'Login successful', 'user': user.first_name})
+    else:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-def logout_view(request):
+@api_view(['POST'])
+def logout_user(request):
     logout(request)
-    messages.info(request, "You’ve been logged out.")
-    return redirect('login')
+    return Response({'message': 'Logged out successfully'})
