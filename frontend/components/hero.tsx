@@ -29,14 +29,15 @@ export default function Hero() {
         </div>
 
         {/* Heading */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-linear-to-r from-cyan-300 via-blue-300 to-cyan-400 bg-clip-text text-transparent leading-tight">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white leading-tight">
           Evolving Intelligence
-          <br />
+        </h1>
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-700 bg-clip-text text-transparent leading-tight">
           Empowering Innovation
         </h1>
 
         {/* Subheading */}
-        <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg md:text-xl text-white mb-8 max-w-2xl mx-auto leading-relaxed">
           Bridge the gaps in proactive healthcare with AI-driven analysis combining DNA insights, diagnostic imaging,
           and clinical data for truly personalized medicine.
         </p>
