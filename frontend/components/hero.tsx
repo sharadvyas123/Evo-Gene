@@ -4,7 +4,8 @@ import { ArrowRight, Zap } from "lucide-react"
 
 export default function Hero() {
   return (
-    <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent">
+    <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent pt-24">
+
       {/* 🎬 Background Video */}
       <video
         autoPlay
