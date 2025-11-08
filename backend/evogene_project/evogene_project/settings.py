@@ -43,6 +43,7 @@ MORE_APPS = [
     'corsheaders',  
     'rest_framework',
     'register', 
+    'disease',
 ]
 
 INSTALLED_APPS += MORE_APPS

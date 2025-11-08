@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-
 User = get_user_model()
 
 
@@ -60,3 +59,6 @@ def login_user(request):
 def logout_user(request):
     
     return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+
+
+
