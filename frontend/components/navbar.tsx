@@ -48,9 +48,9 @@ export default function Navbar() {
             <Link href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors">
               Features
             </Link>
-            <Link href="#tech" className="text-gray-300 hover:text-cyan-400 transition-colors">
-              Tech Stack
-            </Link>
+            <Link href="#services" className="text-gray-300 hover:text-cyan-400 transition-colors">
+  Services
+</Link>
           </div>
 
           {/* Auth Button — Login / Logout have same styling */}
