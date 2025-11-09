@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // ✅ Public pages that don't require login
-const publicPaths = ["/login", "/signup", "/"];
+const publicPaths = ["/login", "/signup", "/", "/diabetes"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("accessToken")?.value || null;
-  console.log('accessToken', token)
+  console.log("accessToken", token);
 
   // 🚫 1. If NOT logged in and trying to access protected pages → redirect to login
   if (!token && !publicPaths.includes(pathname)) {
