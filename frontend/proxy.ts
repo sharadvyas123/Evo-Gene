@@ -1,29 +1,37 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/login", "/signup"];
+// ✅ Public pages that don't require login
+const publicPaths = ["/login", "/signup", "/"];
 
-// ✅ Function name must match file name ("proxy")
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("accessToken")?.value || null;
   console.log('accessToken', token)
 
-  // 🚫 If user not logged in and trying to access protected route
+  // 🚫 1. If NOT logged in and trying to access protected pages → redirect to login
   if (!token && !publicPaths.includes(pathname)) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // 🔒 If already logged in, block access to login/signup
-  if (token && publicPaths.includes(pathname)) {
+  // 🔒 2. If already logged in, block access to login/signup → redirect to dashboard
+  if (token && ["/login", "/signup"].includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // ✅ Otherwise allow
+  // ✅ 3. Otherwise allow request to proceed
   return NextResponse.next();
 }
 
-// ✅ Define which routes should be handled by proxy
+// ✅ Apply proxy to specific routes
 export const config = {
-  matcher: ["/chatbot", "/login", "/signup"], //"/", "/dashboard" this to add 
+  matcher: [
+    "/",
+    "/login",
+    "/signup",
+    "/dashboard",
+    "/chatbot",
+    "/brain-tumor-analysis",
+    "/diabetes",
+  ],
 };
