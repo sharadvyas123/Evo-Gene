@@ -35,6 +35,7 @@ Follow these steps to set up and run the Evo Gene application locally.
 - **Python 3.10+** (Recommended for Django)
 - **Node.js & npm** (Required for React)
 - `pip` (Python package installer)
+- MODAL signup required
 
 ### 💻 Installation & Setup
 
