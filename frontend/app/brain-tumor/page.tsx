@@ -60,15 +60,18 @@ export default function BrainTumorAnalysis() {
 
       {/* ✅ CLICKABLE LOGO (top-left) */}
       <div className="absolute top-6 left-6 z-50 cursor-pointer">
-        <Link href="/">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">E</span>
-            </div>
-            <span className="text-white font-bold text-xl drop-shadow-lg">EvoGene</span>
-          </div>
-        </Link>
-      </div>
+  <Link href="/">
+    <div className="flex items-center gap-3">
+      <img
+        src="/apple-icon.png"
+        alt="EvoGene Logo"
+        className="w-10 h-10 rounded-lg shadow-lg hover:scale-105 transition-transform"
+      />
+      <span className="text-white font-bold text-xl drop-shadow-lg">EvoGene</span>
+    </div>
+  </Link>
+</div>
+
 
       {/* 🎬 Background Video */}
       <video
