@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Brain, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function DiabetesPage() {
   const [formData, setFormData] = useState({
@@ -52,6 +53,19 @@ export default function DiabetesPage() {
 
   return (
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent pt-24">
+
+      {/* ✅ CLICKABLE LOGO (top-left) */}
+      <div className="absolute top-6 left-6 z-50 cursor-pointer">
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">E</span>
+            </div>
+            <span className="text-white font-bold text-xl drop-shadow-lg">EvoGene</span>
+          </div>
+        </Link>
+      </div>
+
       {/* Background Video */}
       <video
         autoPlay
@@ -64,15 +78,18 @@ export default function DiabetesPage() {
       </video>
 
       <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-[#020617] via-[#0b1120] to-[#020617] text-white px-6 py-10">
+
         <div className="w-full max-w-3xl bg-white/10 border border-cyan-500/30 backdrop-blur-lg rounded-2xl shadow-lg p-10">
           <h1 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Diabetes Prediction 🩸
           </h1>
+
           <p className="text-center text-gray-400 mb-8">
             Enter your medical details below and EvoGene AI will predict your diabetes risk.
           </p>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* Glucose */}
             <div className="flex flex-col">
               <label className="mb-2 text-sm text-gray-300">Glucose</label>
@@ -224,8 +241,12 @@ export default function DiabetesPage() {
               }`}
             >
               {result.result === "Diabetic"
-                ? `⚠️ The person is likely to have Diabetes (Confidence: ${Math.round(result.probability * 100)}%)`
-                : `✅ The person is not likely to have Diabetes (Confidence: ${Math.round(result.probability * 100)}%)`}
+                ? `⚠️ The person is likely to have Diabetes (Confidence: ${Math.round(
+                    result.probability * 100
+                  )}%)`
+                : `✅ The person is not likely to have Diabetes (Confidence: ${Math.round(
+                    result.probability * 100
+                  )}%)`}
             </div>
           )}
         </div>

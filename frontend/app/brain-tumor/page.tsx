@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { UploadCloud, Brain, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function BrainTumorAnalysis() {
   const [file, setFile] = useState<File | null>(null);
@@ -24,39 +25,51 @@ export default function BrainTumorAnalysis() {
   });
 
   const handleAnalyze = async () => {
-  if (!file) return;
+    if (!file) return;
 
-  setLoading(true);
-  setResult(null);
+    setLoading(true);
+    setResult(null);
 
-  const formData = new FormData();
-  formData.append("image", file);
+    const formData = new FormData();
+    formData.append("image", file);
 
-  try {
-    const response = await fetch("http://localhost:8000/api/brain-tumor/analysis/", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const response = await fetch("http://localhost:8000/api/brain-tumor/analysis/", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      setResult(data.masked_image_url);
-    } else {
-      console.error("Error:", data);
-      alert(`Error: ${data.error || "Something went wrong"}`);
+      if (response.ok) {
+        setResult(data.masked_image_url);
+      } else {
+        console.error("Error:", data);
+        alert(`Error: ${data.error || "Something went wrong"}`);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("Failed to connect to backend!");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    alert("Failed to connect to backend!");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent pt-24">
+
+      {/* ✅ CLICKABLE LOGO (top-left) */}
+      <div className="absolute top-6 left-6 z-50 cursor-pointer">
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">E</span>
+            </div>
+            <span className="text-white font-bold text-xl drop-shadow-lg">EvoGene</span>
+          </div>
+        </Link>
+      </div>
+
       {/* 🎬 Background Video */}
       <video
         autoPlay
@@ -69,18 +82,21 @@ export default function BrainTumorAnalysis() {
         Your browser does not support the video tag.
       </video>
 
-      {/* 🧬 Main Content */}
+      {/* Main Content */}
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-6 py-10 relative z-10">
+        
         {/* Glassy Container */}
         <div className="w-full max-w-3xl bg-white/10 backdrop-blur-2xl border border-cyan-400/30 rounded-2xl shadow-[0_0_40px_rgba(34,211,238,0.15)] p-10 text-center">
+
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             Brain Tumor Analysis 🧠
           </h1>
+
           <p className="text-gray-300 mb-8 max-w-xl mx-auto">
             Upload an MRI scan or drag & drop your image below. Our AI will analyze it for potential tumor regions.
           </p>
 
-          {/* 🩻 Upload Box */}
+          {/* Upload Box */}
           <div
             {...getRootProps()}
             className={`w-full max-w-2xl h-64 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 mx-auto ${
@@ -98,7 +114,7 @@ export default function BrainTumorAnalysis() {
             )}
           </div>
 
-          {/* 🖼 Preview */}
+          {/* Preview */}
           {preview && (
             <div className="mt-8">
               <h2 className="text-lg mb-3 text-gray-300">🩺 Selected Image:</h2>
@@ -110,7 +126,7 @@ export default function BrainTumorAnalysis() {
             </div>
           )}
 
-          {/* ⚙️ Analyze Button */}
+          {/* Analyze Button */}
           {file && (
             <button
               onClick={handleAnalyze}
@@ -123,7 +139,7 @@ export default function BrainTumorAnalysis() {
             </button>
           )}
 
-          {/* 🧩 Result */}
+          {/* Result */}
           {result && (
             <div className="mt-12">
               <h2 className="text-xl mb-4 text-cyan-400">AI-Generated Output:</h2>
@@ -134,6 +150,7 @@ export default function BrainTumorAnalysis() {
               />
             </div>
           )}
+
         </div>
       </div>
     </section>
