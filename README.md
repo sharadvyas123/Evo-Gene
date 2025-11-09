@@ -108,14 +108,16 @@ We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) gui
 
 Distributed under the **MIT License**. See the `LICENSE` file for more information.
 
-
+---
 ## Team Members -
 
+| NAME                  |   ROLES                       |
 ---------------------------------------------------------
 | Kaustubh Srivastava   |   Leader and Backend Engineer |
 | Vyas Sharad           |   ML and Backend Engineer     |
 | Anmol Srivastava      |   ML Engineer                 |
 | Divyansh Kashyap      |   Frontend Engineer           |
 ---------------------------------------------------------
+---
 
 Project Link: [https://github.com/sharadvyas123/Evo-Gene](https://github.com/sharadvyas123/Evo-Gene)
