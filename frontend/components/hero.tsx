@@ -44,12 +44,12 @@ export default function Hero() {
               Brain Tumor Analysis
             </button>
 
-            <button
+            {/* <button
               onClick={() => router.push("/diabetes")}
               className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:scale-105 transition-all"
             >
               Diabetes Analysis
-            </button>
+            </button> */}
 
             <button
               onClick={() => setShowDemoMenu(false)}
