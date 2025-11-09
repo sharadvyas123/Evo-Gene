@@ -9,11 +9,16 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEBUG = True  # ensure this is True during development
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -40,9 +45,12 @@ INSTALLED_APPS = [
 ]
 
 MORE_APPS = [
-    'rest_framework',
     'corsheaders',  
+    'rest_framework',
     'register', 
+    'disease',
+    'brain_tumor',
+    'chatbot',
 ]
 
 INSTALLED_APPS += MORE_APPS
@@ -139,7 +147,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+     "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
 ]
+CORS_ALLOW_ALL_ORIGINS = True  
+CORS_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
 
 AUTH_USER_MODEL = 'register.CustomUser'
+
