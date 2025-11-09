@@ -10,6 +10,7 @@ import joblib
 import numpy as np
 import os
 import sys
+pd.set_option('future.no_silent_downcasting', True)
 
 User = get_user_model()
 
