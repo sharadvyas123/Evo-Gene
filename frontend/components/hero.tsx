@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ for navigation
 import { ArrowRight, Zap } from "lucide-react";
-import ChatPage from "@/app/chatbot/page";
 
 export default function Hero() {
-  const [showChatbot, setShowChatbot] = useState(false);
   const [showDemoMenu, setShowDemoMenu] = useState(false);
+  const router = useRouter(); // ✅ initialize router
 
-  // ✅ Show chatbot on Start
+  // 🔹 Redirect to chatbot page
   const handleStartAnalysis = () => {
-    setShowChatbot(true);
+    router.push("/chatbot");
   };
-
-  // ✅ If user clicked Start → show Chatbot instead of Hero
-  if (showChatbot) {
-    return <ChatPage />;
-  }
 
   return (
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent pt-24">
@@ -40,18 +35,17 @@ export default function Hero() {
       {showDemoMenu && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-20">
           <div className="bg-[#0B1228] p-8 rounded-2xl border border-cyan-500/40 text-white w-80 text-center">
-
             <h2 className="text-xl font-bold mb-4">Choose a Demo</h2>
 
             <button
-              onClick={() => (window.location.href = "/brain-tumor")}
+              onClick={() => router.push("/brain-tumor")}
               className="w-full mb-4 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:scale-105 transition-all"
             >
               Brain Tumor Analysis
             </button>
 
             <button
-              onClick={() => (window.location.href = "/diabetes")}
+              onClick={() => router.push("/diabetes")}
               className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg font-semibold hover:scale-105 transition-all"
             >
               Diabetes Analysis
@@ -67,9 +61,10 @@ export default function Hero() {
         </div>
       )}
 
-      {/* Content */}
+      {/* ==============================
+          ✅ MAIN HERO CONTENT
+      =============================== */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-
         {/* Badge */}
         <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-400/30 rounded-full">
           <Zap size={16} className="text-cyan-400" />
@@ -112,7 +107,6 @@ export default function Hero() {
 
         {/* ✅ Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-blue-400/20">
-
           <div className="text-center">
             <p className="text-2xl md:text-3xl font-bold text-cyan-400">98%</p>
             <p className="text-sm text-gray-400 mt-2">Accuracy Rate</p>
@@ -132,7 +126,6 @@ export default function Hero() {
             <p className="text-2xl md:text-3xl font-bold text-blue-400">24/7</p>
             <p className="text-sm text-gray-400 mt-2">Always Available</p>
           </div>
-
         </div>
       </div>
     </section>

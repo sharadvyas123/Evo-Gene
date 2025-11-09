@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // ✅ Public pages that don't require login
-const publicPaths = ["/login", "/signup", "/", "/diabetes"];
+const publicPaths = ["/login", "/signup", "/"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const token = req.cookies.get("accessToken")?.value || null;
+  const token = req.cookies.get("accessToken")?.value;
   console.log("accessToken", token);
 
   // 🚫 1. If NOT logged in and trying to access protected pages → redirect to login
@@ -16,7 +16,7 @@ export function proxy(req: NextRequest) {
 
   // 🔒 2. If already logged in, block access to login/signup → redirect to dashboard
   if (token && ["/login", "/signup"].includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // ✅ 3. Otherwise allow request to proceed
@@ -29,9 +29,5 @@ export const config = {
     "/",
     "/login",
     "/signup",
-    "/dashboard",
-    "/chatbot",
-    "/brain-tumor-analysis",
-    "/diabetes",
   ],
 };
