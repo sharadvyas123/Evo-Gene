@@ -24,16 +24,36 @@ export default function BrainTumorAnalysis() {
   });
 
   const handleAnalyze = async () => {
-    if (!file) return;
-    setLoading(true);
-    setResult(null);
+  if (!file) return;
 
-    // Temporary simulation (replace later with Django API)
-    setTimeout(() => {
-      setResult("/placeholder.jpg");
-      setLoading(false);
-    }, 2000);
-  };
+  setLoading(true);
+  setResult(null);
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const response = await fetch("http://localhost:8000/api/brain-tumor/analysis/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setResult(data.masked_image_url);
+    } else {
+      console.error("Error:", data);
+      alert(`Error: ${data.error || "Something went wrong"}`);
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Failed to connect to backend!");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <section className="relative flex items-center justify-center min-h-screen overflow-hidden bg-transparent pt-24">

@@ -7,6 +7,7 @@ const publicPaths = ["/login", "/signup"];
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("accessToken")?.value || null;
+  console.log('accessToken', token)
 
   // 🚫 If user not logged in and trying to access protected route
   if (!token && !publicPaths.includes(pathname)) {

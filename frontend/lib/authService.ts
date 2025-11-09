@@ -4,6 +4,7 @@ export const loginUser = async (email: string, password: string) => {
   const res = await api.post("/login/", { email, password });
   const { access, refresh } = res.data;
   console.log("ok till the function ");
+  console.log("access toke : " , access , refresh);
 
   // ✅ Save tokens in localStorage
   localStorage.setItem("accessToken", access);
