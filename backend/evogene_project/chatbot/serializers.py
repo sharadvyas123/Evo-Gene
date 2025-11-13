@@ -1,12 +1,24 @@
-# core/serializers.py
+# chatbot/serializers.py
 from rest_framework import serializers
 
 class ChatInputSerializer(serializers.Serializer):
-    # This is the user's text input (e.g., "Analyze this variant...")
-    user_query = serializers.CharField(max_length=500) 
+    # User query or prompt (either one should be accepted)
+    user_query = serializers.CharField(max_length=500, required=False)
+    prompt = serializers.CharField(max_length=500, required=False)
     
-    # This is the session ID for history (e.g., a Django User ID or session key)
-    session_id = serializers.CharField(max_length=100, required=False, default='default_user') 
+    # Optional session ID for tracking user
+    session_id = serializers.CharField(max_length=100, required=False, default='default_user')
     
-    # Optional field for pre-uploaded/structured data (e.g., a dictionary of diabetes metrics)
+    # Optional structured patient data
     patient_data = serializers.JSONField(required=False, default=dict)
+
+    def validate(self, data):
+        # Ensure at least one of user_query or prompt is provided
+        if not data.get("user_query") and not data.get("prompt"):
+            raise serializers.ValidationError("Either 'user_query' or 'prompt' is required.")
+        
+        # If only prompt is provided, map it to user_query internally
+        if "prompt" in data and not data.get("user_query"):
+            data["user_query"] = data["prompt"]
+        
+        return data

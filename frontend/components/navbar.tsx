@@ -33,12 +33,16 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
 
           {/* ✅ CLICKABLE LOGO */}
-          <Link href="/" className="flex items-center gap-2 cursor-pointer">
-            <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">E</span>
-            </div>
-            <span className="text-white font-bold text-xl">EvoGene</span>
-          </Link>
+          <Link href="/" className="flex items-center gap-3">
+  <img
+    src="/apple-icon.png"
+    alt="EvoGene Logo"
+    className="w-10 h-10 object-contain rounded-lg cursor-pointer hover:scale-105 transition-transform duration-200"
+  />
+  <span className="text-white font-bold text-xl cursor-pointer hover:text-cyan-400 transition-colors">
+    EvoGene
+  </span>
+</Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
@@ -48,9 +52,9 @@ export default function Navbar() {
             <Link href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors">
               Features
             </Link>
-            <Link href="#tech" className="text-gray-300 hover:text-cyan-400 transition-colors">
-              Tech Stack
-            </Link>
+            <Link href="#services" className="text-gray-300 hover:text-cyan-400 transition-colors">
+  Services
+</Link>
           </div>
 
           {/* Auth Button — Login / Logout have same styling */}
