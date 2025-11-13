@@ -4,45 +4,134 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import Link from "next/link";
+import axios from "axios";
+
+// 🧬 Message type
+interface Message {
+  sender: "user" | "bot";
+  text: string;
+}
+
+// 🧠 API response types
+interface ChatResponse {
+  task_id: string;
+  status: string;
+  message: string;
+}
+
+interface StatusResponse {
+  status: "processing" | "completed" | "error";
+  summary?: string;
+  report?: string;
+  response?: string;
+  error?: string;
+}
 
 export default function ChatPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<{ sender: "user" | "bot"; text: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Authentication check – only logged-in users can access
+  // ✅ Auth check
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
     if (token !== "loggedin-token") {
       localStorage.setItem("redirectAfterLogin", "/chatbot");
       router.push("/login");
     }
   }, [router]);
 
-  // ✅ Auto-scroll to latest message
+  // ✅ Scroll to bottom when new messages appear
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = () => {
+  // 🚀 Send message to backend
+  const handleSend = async (): Promise<void> => {
     if (!input.trim()) return;
 
-    const userMsg = { sender: "user", text: input };
+    const userMsg: Message = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    setLoading(true);
 
-    setTimeout(() => {
-      const botMsg = { sender: "bot", text: "🤖 EvoGene Assistant: How can I help you today?" };
+    try {
+      // Step 1️⃣ — Start background analysis
+      const startRes = await axios.post<ChatResponse>("http://localhost:8000/api/chat/", {
+        prompt: input,
+      });
+
+      const taskId = startRes.data.task_id;
+      if (!taskId) throw new Error("No task ID returned from backend!");
+
+      // Show interim message
+      const botProcessing: Message = {
+        sender: "bot",
+        text: "🧬 EvoGene Assistant: Working on your variant analysis... please wait a bit!",
+      };
+      setMessages((prev) => [...prev, botProcessing]);
+
+      // Step 2️⃣ — Poll the /status endpoint
+      let done = false;
+      let attempt = 0;
+
+      while (!done && attempt < 30) {
+        await new Promise((r) => setTimeout(r, 3000)); // wait 3s
+        attempt++;
+
+        try {
+          const statusRes = await axios.get<StatusResponse>(
+            `http://localhost:8000/api/status/${taskId}/`
+          );
+          const data = statusRes.data;
+
+          if (data.status === "completed") {
+            const botReply =
+              data.summary ||
+              data.report ||
+              data.response ||
+              "✅ EvoGene Assistant: Analysis complete, but no summary returned.";
+
+            const botMsg: Message = { sender: "bot", text: botReply };
+            setMessages((prev) => [...prev, botMsg]);
+            done = true;
+          } else if (data.status === "error") {
+            const botMsg: Message = {
+              sender: "bot",
+              text: `⚠️ EvoGene Assistant: ${data.error || "Something went wrong during analysis."}`,
+            };
+            setMessages((prev) => [...prev, botMsg]);
+            done = true;
+          }
+        } catch (pollErr) {
+          console.warn("Polling error:", pollErr);
+        }
+      }
+
+      if (!done) {
+        const botMsg: Message = {
+          sender: "bot",
+          text: "⌛ EvoGene Assistant: Still processing... try again later!",
+        };
+        setMessages((prev) => [...prev, botMsg]);
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      const botMsg: Message = {
+        sender: "bot",
+        text: "⚠️ EvoGene Assistant: The server seems unreachable. Please try again later.",
+      };
       setMessages((prev) => [...prev, botMsg]);
-    }, 600);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050B1E] text-white relative">
-
-      {/* ✅ CLICKABLE LOGO */}
+      {/* ✅ Clickable Logo */}
       <div className="absolute top-6 left-6 z-50 cursor-pointer">
         <Link href="/">
           <div className="flex items-center gap-2">
@@ -61,7 +150,7 @@ export default function ChatPage() {
         </h1>
       </header>
 
-      {/* Chat section */}
+      {/* Chat messages */}
       <main className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.length === 0 ? (
           <p className="text-center text-gray-400 mt-20">
@@ -97,15 +186,16 @@ export default function ChatPage() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           className="flex-1 p-3 rounded-xl bg-[#101832] border border-cyan-700/40 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          disabled={loading}
         />
         <button
           onClick={handleSend}
-          className="p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:scale-105 transition-transform"
+          className="p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:scale-105 transition-transform disabled:opacity-50"
+          disabled={loading}
         >
           <Send size={20} />
         </button>
       </div>
-
     </div>
   );
 }
